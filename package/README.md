@@ -4,32 +4,40 @@ Cross-origin window communication based on `window.postMessage()`
 # Example
 ### Host
 ```ts
-const host = new WindowHost("http://localhost:4030");
+const host = new WindowHost("http://localhost:7702")
 host.onMessage = (data) => {
-  console.log("child sent msg", data)
+    console.log("child sent msg", data)
+}
+host.onChildAttach = () => {
+    console.log("host has attached to existing window")
+}
+host.onChildOpen = () => {
+    console.log("child opened a new window")
 }
 host.onChildClose = () => {
-  console.log("child window closed")
+    console.log("child window closed")
 }
 setInterval(() => {
-  host.postMessage({ type: "Ok", data: "data from host" })
+  host.postMessage({ type: "ok", data: "data from host" })
 }, 1500)
 ```
 
 ### Dialog
-
 ```ts 
 const dialog = new WindowDialog();
-dialog.onAttache = () => {
-    console.log("parent refreshed the window")
-}
 dialog.onMessage = (data) => {
     console.log("parent sent message", data)
+}
+dialog.onParentOpen = () => {
+    console.log("parent opend this window")
+}
+dialog.onParentAttach = () => {
+    console.log("parent refreshed the window")
 }
 dialog.onParentClose = () => {
     console.log("parent closed the window")
 }
 setInterval(() => {
-    dialog.postMessage({ type: "ok" })
+  dialog.postMessage({ type: "ok", data: "data from dialog" })
 }, 1500)
 ```

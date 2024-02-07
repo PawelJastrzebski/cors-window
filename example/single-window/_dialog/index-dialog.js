@@ -7,23 +7,24 @@ function print(msg) {
 }
 
 const dialog = new WindowDialog();
-dialog.onAttache = () => {
-    console.log("parent refreshed the window")
-    print("parent refreshed the window")
-}
 dialog.onMessage = (data) => {
     console.log("parent sent message", data)
     print("parent sent message: " + JSON.stringify(data))
+}
+dialog.onParentOpen = () => {
+    console.log("parent opend this window")
+    print("parent opend this window")
+}
+dialog.onParentAttach = () => {
+    console.log("parent refreshed the window")
+    print("parent refreshed the window")
 }
 dialog.onParentClose = () => {
     console.log("parent closed the window")
     print("parent closed the window")
 }
 
-
 let i = 0;
 setInterval(() => {
     dialog.postMessage({ id: i++, sender: "dialog", data: "data from dialog" })
 }, 1000)
-
-print(`isConnected ${dialog.isConnected()}`)

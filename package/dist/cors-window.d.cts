@@ -13,6 +13,8 @@ declare class WindowHost {
     childOrigin: string;
     childWindow: Window | null;
     onMessage: <T extends object>(data: T) => void;
+    onChildOpen: () => void;
+    onChildAttach: () => void;
     onChildClose: () => void;
     isConnected(): boolean;
     constructor(remoteUrl: string, id?: string, options?: DialogOptions);
@@ -23,10 +25,12 @@ declare class WindowDialog {
     parentOrigin: string;
     opener: Window | null;
     onMessage: <T extends object>(data: T) => void;
-    onAttache: () => void;
+    onParentOpen: () => void;
+    onParentAttach: () => void;
     onParentClose: () => void;
     isConnected(): boolean;
     constructor(id?: string);
+    private initialize;
     postMessage<T extends object>(data: T): void;
 }
 

@@ -36,11 +36,12 @@ export const newDialog = (url: string, options?: DialogOptions): Window | null =
     return dialog;
 }
 
+type MsgType = "msg" | "ping" | "host-attach" | "child-open";
 class MessageWrapper {
     constructor(
         readonly id: string,
         readonly json: string,
-        readonly type: "msg" | "ping" | "attached"
+        readonly type: MsgType
     ) { }
 
     parseJson(): object {
@@ -53,12 +54,8 @@ class MessageWrapper {
         }
     }
 
-    static newPing(id: string): MessageWrapper {
-        return new MessageWrapper(id, "", "ping");
-    }
-
-    static newAttache(id: string): MessageWrapper {
-        return new MessageWrapper(id, "", "attached");
+    static new(id: string, type: MsgType): MessageWrapper {
+        return new MessageWrapper(id, "", type);
     }
 
     static newMsg<T extends object>(id: string, data: T): MessageWrapper {
@@ -89,6 +86,8 @@ export class WindowHost {
     childOrigin: string
     childWindow: Window | null;
     onMessage = <T extends object>(data: T) => { }
+    onChildOpen = () => { }
+    onChildAttach = () => { }
     onChildClose = () => { }
 
     public isConnected() {
@@ -112,10 +111,14 @@ export class WindowHost {
             if (palyload.type === 'msg') {
                 this.onMessage?.(palyload.parseJson())
             }
+            if (palyload.type === 'child-open') {
+                this.onChildOpen?.()
+            }
             // reatache on Ping after refresh
             if (this.childWindow == null && palyload.type === 'ping') {
                 this.childWindow = e.source as any;
-                MessageWrapper.newAttache(id).post(this.childWindow, this.childOrigin)
+                this.onChildAttach?.()
+                MessageWrapper.new(id, "host-attach").post(this.childWindow, this.childOrigin)
             }
         }, false)
 
@@ -137,7 +140,8 @@ export class WindowDialog {
     parentOrigin: string = window.document.referrer
     opener: Window | null = window.opener
     onMessage = <T extends object>(data: T) => { }
-    onAttache = () => { }
+    onParentOpen = () => { }
+    onParentAttach = () => { }
     onParentClose = () => { }
 
     public isConnected() {
@@ -145,6 +149,10 @@ export class WindowDialog {
     }
 
     constructor(private id = "single") {
+        setTimeout(() => this.initialize(), 0)
+    }
+
+    private initialize() {
         if (!this.opener) return;
         this.parentOrigin = getOrign(window.document.referrer)
         // listen on msg
@@ -156,8 +164,8 @@ export class WindowDialog {
 
             if (palyload.type === 'msg') {
                 this.onMessage?.(palyload.parseJson())
-            } else if (palyload.type === 'attached') {
-                this.onAttache?.()
+            } else if (palyload.type === 'host-attach') {
+                this.onParentAttach?.()
             }
         }, false)
         // observer close + ping
@@ -167,8 +175,10 @@ export class WindowDialog {
                 this.opener = null;
                 return;
             }
-            MessageWrapper.newPing(this.id).post(this.opener, this.parentOrigin)
+            MessageWrapper.new(this.id, "ping").post(this.opener, this.parentOrigin)
         }, 100)
+        this.onParentOpen?.()
+        MessageWrapper.new(this.id, "child-open").post(this.opener, this.parentOrigin)
     }
     postMessage<T extends object>(data: T): void {
         MessageWrapper.newMsg(this.id, data).post(this.opener, this.parentOrigin)
