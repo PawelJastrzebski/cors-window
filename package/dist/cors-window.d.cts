@@ -3,15 +3,16 @@ interface DialogOptions {
     height: number;
     target?: string;
     centered?: boolean;
-    moveRight?: number;
-    moveDown?: number;
+    xMove?: number;
+    yMove?: number;
     options?: string;
 }
 declare const newDialog: (url: string, options?: DialogOptions) => Window | null;
+type Origin = string;
 declare class WindowHost {
     private id;
-    childOrigin: string;
-    childWindow: Window | null;
+    origin: Origin;
+    child: Window | null;
     onMessage: <T extends object>(data: T) => void;
     onChildOpen: () => void;
     onChildAttach: () => void;
@@ -22,8 +23,8 @@ declare class WindowHost {
 }
 declare class WindowDialog {
     private id;
-    parentOrigin: string;
-    opener: Window | null;
+    origin: Origin;
+    parent: Window | null;
     onMessage: <T extends object>(data: T) => void;
     onParentOpen: () => void;
     onParentAttach: () => void;
