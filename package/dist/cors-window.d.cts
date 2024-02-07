@@ -17,9 +17,9 @@ declare class WindowHost {
     onChildOpen: () => void;
     onChildAttach: () => void;
     onChildClose: () => void;
-    isConnected(): boolean;
+    isOpen(): boolean;
     constructor(remoteUrl: string, id?: string, options?: DialogOptions);
-    postMessage<T extends object>(data: T): void;
+    post<T extends object>(message: T): void;
 }
 declare class WindowDialog {
     private id;
@@ -29,10 +29,10 @@ declare class WindowDialog {
     onParentOpen: () => void;
     onParentAttach: () => void;
     onParentClose: () => void;
-    isConnected(): boolean;
+    isOpen(): boolean;
     constructor(id?: string);
-    private initialize;
-    postMessage<T extends object>(data: T): void;
+    private init;
+    post<T extends object>(message: T): void;
 }
 
 export { type DialogOptions, WindowDialog, WindowHost, newDialog };

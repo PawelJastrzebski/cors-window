@@ -18,7 +18,7 @@ host.onChildClose = () => {
     console.log("child window closed")
 }
 setInterval(() => {
-  host.postMessage({ type: "ok", data: "data from host" })
+  host.post({ type: "ok", data: "data from host" })
 }, 1500)
 ```
 
@@ -38,6 +38,6 @@ dialog.onParentClose = () => {
     console.log("parent closed the window")
 }
 setInterval(() => {
-  dialog.postMessage({ type: "ok", data: "data from dialog" })
+  dialog.post({ type: "ok", data: "data from dialog" })
 }, 1500)
 ```

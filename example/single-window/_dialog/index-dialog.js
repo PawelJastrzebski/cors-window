@@ -26,5 +26,5 @@ dialog.onParentClose = () => {
 
 let i = 0;
 setInterval(() => {
-    dialog.postMessage({ id: i++, sender: "dialog", data: "data from dialog" })
+    dialog.post({ id: i++, sender: "dialog", data: "data from dialog" })
 }, 1000)

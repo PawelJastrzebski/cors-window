@@ -8,6 +8,7 @@ export interface DialogOptions {
     options?: string
 }
 
+const emptyFn = () => { };
 const toJson = JSON.stringify
 const fromJson = JSON.parse
 const W = window;
@@ -49,61 +50,42 @@ const validateOrigin = (msg: MessageEvent<any>, allowedOrigin: string) => {
     }
 }
 
-// Message
 type Origin = string;
 type MsgType = "msg" | "ping" | "host-attach" | "child-open";
-class Msg {
-    constructor(
-        private readonly i: string, // id
-        private readonly j: string, // json
-        readonly type: MsgType // type
-    ) { }
 
-    parseJson(): object {
-        return fromJson(this.j)
-    }
-
-    post(widow: Window | null, origin: string) {
-        if (!!widow) {
-            widow.postMessage(toJson(this), origin)
+// Message
+interface Msg {
+    i: string // id
+    j: string // json
+    type: string
+}
+const msgListen = (id: string, orgin: string, fn: (sender: MessageEventSource | null, msg: Msg) => void) => {
+    W.addEventListener("message", (e) => {
+        validateOrigin(e, orgin)
+        const json: Msg = fromJson(e.data);
+        if (!!json && json.i === id) {
+            fn(e.source, json)
         }
+    }, false)
+}
+const postMsg = (widow: Window | null, origin: string, id: string, type: MsgType, data: string) => {
+    const message = {
+        i: id,
+        j: data,
+        type: type
     }
-
-    static new(id: string, type: MsgType): Msg {
-        return new Msg(id, "", type);
-    }
-
-    static newMsg<T extends object>(id: string, data: T): Msg {
-        return new Msg(id, toJson(data), "msg");
-    }
-
-    private static unwrap(data: string): Msg | null {
-        const json = fromJson(data);
-        if ('type' in json && 'j' in json) {
-            return Object.assign(new Msg("null", "", "msg"), json)
-        }
-        return null
-    }
-
-    static listen(id: string, orgin: string, fn: (sender: MessageEventSource | null, msg: Msg) => void) {
-        W.addEventListener("message", (e) => {
-            validateOrigin(e, orgin)
-            const palyload = Msg.unwrap(e.data);
-            if (!palyload || palyload.i != id) return;
-            fn(e.source, palyload)
-        }, false)
-    }
+    widow?.postMessage(toJson(message), origin)
 }
 
 export class WindowHost {
     origin: Origin
     child: Window | null;
-    onMessage = <T extends object>(data: T) => { }
-    onChildOpen = () => { }
-    onChildAttach = () => { }
-    onChildClose = () => { }
+    onMessage: <T extends object>(data: T) => void = emptyFn
+    onChildOpen = emptyFn
+    onChildAttach = emptyFn
+    onChildClose = emptyFn
 
-    public isConnected() {
+    public isOpen(): boolean {
         return !!this.child && this.child.closed == false;
     }
 
@@ -115,18 +97,18 @@ export class WindowHost {
         }, 250)
 
         // listen on msg
-        Msg.listen(this.id, this.origin, (sender, msg) => {
+        msgListen(this.id, this.origin, (sender, msg) => {
             if (msg.type === 'msg') {
-                this.onMessage?.(msg.parseJson())
+                this.onMessage?.(fromJson(msg.j))
             }
             if (msg.type === 'child-open') {
                 this.onChildOpen?.()
             }
-            // reatache on Ping after refresh
-            if (this.child == null && msg.type === 'ping') {
-                this.child = sender as any;
+            // re-atache on Ping after refresh
+            if (!!sender && this.child == null && msg.type === 'ping') {
+                this.child = sender as Window;
                 this.onChildAttach?.()
-                Msg.new(id, "host-attach").post(this.child, this.origin)
+                postMsg(this.child, this.origin, id, "host-attach", "")
             }
         })
 
@@ -139,34 +121,34 @@ export class WindowHost {
             }
         }, 100)
     }
-    postMessage<T extends object>(data: T): void {
-        Msg.newMsg(this.id, data).post(this.child, this.origin)
+    post<T extends object>(message: T): void {
+        postMsg(this.child, this.origin, this.id, "msg", toJson(message))
     }
 }
 
 export class WindowDialog {
     origin: Origin
     parent: Window | null = W.opener
-    onMessage = <T extends object>(data: T) => { }
-    onParentOpen = () => { }
-    onParentAttach = () => { }
-    onParentClose = () => { }
+    onMessage: <T extends object>(data: T) => void = emptyFn
+    onParentOpen = emptyFn
+    onParentAttach = emptyFn
+    onParentClose = emptyFn
 
-    public isConnected() {
+    public isOpen() {
         return !!this.parent && this.parent.closed == false;
     }
 
     constructor(private id = "1") {
-        setTimeout(() => this.initialize(), 0)
+        setTimeout(() => this.init(), 0)
     }
 
-    private initialize() {
+    private init() {
         if (!this.parent) return;
         this.origin = getOrign(D.referrer)
         // listen on msg
-        Msg.listen(this.id, this.origin, (sender, msg) => {
+        msgListen(this.id, this.origin, (sender, msg) => {
             if (msg.type === 'msg') {
-                this.onMessage?.(msg.parseJson())
+                this.onMessage?.(fromJson(msg.j))
             } else if (msg.type === 'host-attach') {
                 this.onParentAttach?.()
             }
@@ -178,12 +160,12 @@ export class WindowDialog {
                 this.parent = null;
                 return;
             }
-            Msg.new(this.id, "ping").post(this.parent, this.origin)
+            postMsg(this.parent, this.origin, this.id, "ping", "")
         }, 100)
         this.onParentOpen?.()
-        Msg.new(this.id, "child-open").post(this.parent, this.origin)
+        postMsg(this.parent, this.origin, this.id, "child-open", "")
     }
-    postMessage<T extends object>(data: T): void {
-        Msg.newMsg(this.id, data).post(this.parent, this.origin)
+    post<T extends object>(message: T): void {
+        postMsg(this.parent, this.origin, this.id, "msg", toJson(message))
     }
 }

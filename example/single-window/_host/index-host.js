@@ -26,5 +26,5 @@ host.onChildClose = () => {
 
 let i = 0;
 setInterval(() => {
-    host.postMessage({ id: i++, sender: "host", data: "data from host" })
+    host.post({ id: i++, sender: "host", data: "data from host" })
 }, 4000)
