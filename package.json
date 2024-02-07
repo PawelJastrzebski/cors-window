@@ -1,0 +1,17 @@
+{
+  "name": "cors-window-dev",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "",
+    "build": "cd ./package && npx tsup ./cors-window.ts --format cjs,esm --dts --minify"
+  },
+  "author": "Paweł Jastrzębski",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.2.1",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}

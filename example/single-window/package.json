@@ -1,0 +1,11 @@
+{
+  "name": "single-window",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install": "cp  ../../package/dist/cors-window.js ./_host/ && cp  ../../package/dist/cors-window.js ./_dialog/",
+    "start:host": "npm run install && serve -p 7701 ./_host",
+    "start:dialog": "npm run install && serve -p 7702 ./_dialog"
+  }
+}
+

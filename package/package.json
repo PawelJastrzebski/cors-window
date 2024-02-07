@@ -1,0 +1,17 @@
+{
+    "name": "cors-window",
+    "description": "CORS-Origin window.open() comunication",
+    "version": "1.0.0.alpha.1",
+    "type": "module",
+    "author": "Paweł Jastrzębski",
+    "license": "MIT",
+    "main": "dist/cors-window.cjs",
+    "module": "dist/cors-window.js",
+    "types": "dist/cors-window.d.ts",
+    "scripts": {},
+    "keywords": [
+        "CORS",
+        "dialog",
+        "popup"
+    ]
+}
