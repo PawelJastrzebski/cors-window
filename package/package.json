@@ -1,10 +1,14 @@
 {
     "name": "cors-window",
     "description": "CORS-Origin window.open() comunication",
-    "version": "0.0.0-alpha.2",
+    "version": "0.0.0-alpha.3",
     "type": "module",
     "author": "Paweł Jastrzębski",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/PawelJastrzebski/cors-window.git"
+    },
     "main": "dist/cors-window.cjs",
     "module": "dist/cors-window.js",
     "types": "dist/cors-window.d.ts",

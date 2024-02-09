@@ -11,6 +11,13 @@ export interface DialogOptions {
 const emptyFn = () => { };
 const toJson = JSON.stringify
 const fromJson = JSON.parse
+const fromJsonSafe = (data: string): any | null => {
+    try {
+        return fromJson(data)
+    } catch (_) {
+        return null
+    }
+}
 const W = window;
 const D = document;
 export const newDialog = (url: string, options?: DialogOptions): Window | null => {
@@ -61,9 +68,10 @@ interface Msg {
 }
 const msgListen = (id: string, orgin: string, fn: (sender: MessageEventSource | null, msg: Msg) => void) => {
     W.addEventListener("message", (e) => {
-        validateOrigin(e, orgin)
-        const json: Msg = fromJson(e.data);
-        if (!!json && json.i === id) {
+        const json: Msg = fromJsonSafe(e.data)
+        // validate data format
+        if (!!json && !!json.type && json.i === id) {
+            validateOrigin(e, orgin)
             fn(e.source, json)
         }
     }, false)
