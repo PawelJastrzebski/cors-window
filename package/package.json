@@ -1,7 +1,7 @@
 {
     "name": "cors-window",
     "description": "CORS-Origin window.open() comunication",
-    "version": "0.0.0-alpha.3",
+    "version": "0.0.0-alpha.4",
     "type": "module",
     "author": "Paweł Jastrzębski",
     "license": "MIT",

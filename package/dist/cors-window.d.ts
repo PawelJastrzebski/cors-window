@@ -9,30 +9,30 @@ interface DialogOptions {
 }
 declare const newDialog: (url: string, options?: DialogOptions) => Window | null;
 type Origin = string;
-declare class WindowHost {
+declare class WindowHost<T extends object = object> {
     private id;
     origin: Origin;
     child: Window | null;
-    onMessage: <T extends object>(data: T) => void;
+    onMessage: (payload: T) => void;
     onChildOpen: () => void;
     onChildAttach: () => void;
     onChildClose: () => void;
     isOpen(): boolean;
     constructor(remoteUrl: string, id?: string, options?: DialogOptions);
-    post<T extends object>(message: T): void;
+    post(payload: T): void;
 }
-declare class WindowDialog {
+declare class WindowDialog<T extends object = object> {
     private id;
     origin: Origin;
     parent: Window | null;
-    onMessage: <T extends object>(data: T) => void;
+    onMessage: (payload: T) => void;
     onParentOpen: () => void;
     onParentAttach: () => void;
     onParentClose: () => void;
     isOpen(): boolean;
     constructor(id?: string);
     private init;
-    post<T extends object>(message: T): void;
+    post(payload: T): void;
 }
 
 export { type DialogOptions, WindowDialog, WindowHost, newDialog };

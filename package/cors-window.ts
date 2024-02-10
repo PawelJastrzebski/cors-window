@@ -85,10 +85,10 @@ const postMsg = (widow: Window | null, origin: string, id: string, type: MsgType
     widow?.postMessage(toJson(message), origin)
 }
 
-export class WindowHost {
+export class WindowHost<T extends object = object> {
     origin: Origin
     child: Window | null;
-    onMessage: <T extends object>(data: T) => void = emptyFn
+    onMessage: (payload: T) => void = emptyFn
     onChildOpen = emptyFn
     onChildAttach = emptyFn
     onChildClose = emptyFn
@@ -129,15 +129,15 @@ export class WindowHost {
             }
         }, 100)
     }
-    post<T extends object>(message: T): void {
-        postMsg(this.child, this.origin, this.id, "msg", toJson(message))
+    post(payload: T): void {
+        postMsg(this.child, this.origin, this.id, "msg", toJson(payload))
     }
 }
 
-export class WindowDialog {
+export class WindowDialog<T extends object = object>  {
     origin: Origin
     parent: Window | null = W.opener
-    onMessage: <T extends object>(data: T) => void = emptyFn
+    onMessage: (payload: T) => void = emptyFn
     onParentOpen = emptyFn
     onParentAttach = emptyFn
     onParentClose = emptyFn
@@ -173,7 +173,7 @@ export class WindowDialog {
         this.onParentOpen?.()
         postMsg(this.parent, this.origin, this.id, "child-open", "")
     }
-    post<T extends object>(message: T): void {
-        postMsg(this.parent, this.origin, this.id, "msg", toJson(message))
+    post(payload: T): void {
+        postMsg(this.parent, this.origin, this.id, "msg", toJson(payload))
     }
 }
