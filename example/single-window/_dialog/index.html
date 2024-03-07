@@ -1,13 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dialog</title>
     <script type="module" src="./index-dialog.js"></script>
+    <style>
+        body {
+            display: flex;
+        }
+
+        .side {
+            flex: 1;
+        }
+    </style>
 </head>
+
 <body>
-    <h2>Dialog</h2>
-    <pre id="print"></pre>
+    <div class="side">
+        <h2>Dialog</h2>
+        <pre id="print"></pre>
+    </div>
+    <div class="side">
+        <h2>Iframe</h2>
+        <pre id="print_iframe"></pre>
+    </div>
 </body>
+
 </html>

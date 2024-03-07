@@ -1,13 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Host</title>
     <script type="module" src="./index-host.js"></script>
+    <style>
+        body {
+            display: flex;
+        }
+
+        .side {
+            flex: 1;
+        }
+    </style>
 </head>
 <body>
-    <h2>Host</h2>
-    <pre id="print"></pre>
+    <div class="side">
+        <h2>Dialog</h2>
+        <pre id="print"></pre>
+    </div>
+    <div class="side">
+        <h2>Iframe</h2>
+        <iframe src="http://localhost:7702/" height="400" width="90%"></iframe>
+        <pre id="print_iframe"></pre>
+    </div>
 </body>
+
 </html>

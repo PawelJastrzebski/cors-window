@@ -1,10 +1,10 @@
 # cors-window
-Cross-origin window communication based on `window.postMessage()`
+Cross-origin window/iframe communication
 
 # Example
 ### Host
 ```ts
-const host = new WindowHost("http://localhost:7702")
+const host = new DialogHost("http://localhost:7702")
 host.onMessage = (data) => {
     console.log("child sent msg", data)
 }
@@ -24,7 +24,7 @@ setInterval(() => {
 
 ### Dialog
 ```ts 
-const dialog = new WindowDialog();
+const dialog = new DialogWindow();
 dialog.onMessage = (data) => {
     console.log("parent sent message", data)
 }
@@ -41,3 +41,6 @@ setInterval(() => {
   dialog.post({ type: "ok", data: "data from dialog" })
 }, 1500)
 ```
+
+## Examples
+For full examples go to [`example`](https://vscode.dev/github/PawelJastrzebski/cors-window) directory
