@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "",
     "build": "cd ./package && npx tsup ./cors-window.ts --format cjs,esm --dts --minify",
-    "publish": "npm publish ./package",
+    "publish": "npm run build && npm publish ./package",
     "publish:test": "npm publish ./package --dry-run"
   },
   "author": "Paweł Jastrzębski",
