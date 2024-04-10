@@ -6,7 +6,13 @@ const fromJsonSafe = (data: string): any | null => {
 }
 const W = window;
 const D = document;
-const getOrign = (url: string): string =>  new URL(url).origin
+const getOrign = (url: string): string =>  {
+    try {
+        return new URL(url).origin
+    } catch (e) {
+        return `Invalid URL: ${url}`
+    }
+}
 const validateOrigin = (msg: MessageEvent<any>, allowedOrigin: string) => {
     if (msg.origin != allowedOrigin) {
         throw new Error(`Invalid message origin: ${msg.origin}, allowed: ${allowedOrigin}`)
